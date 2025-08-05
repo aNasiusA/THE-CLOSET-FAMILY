@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body.bg-signup {
+            background-image: url('/static/my_wallpaper.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .signup-card {
+            background: rgba(255,255,255,0.92);
+            border-radius: 18px;
+            box-shadow: 0 4px 32px rgba(122,41,76,0.13);
+            padding: 2.5rem 2rem 2rem 2rem;
+            max-width: 420px;
+            width: 100%;
+        }
+        .signup-title {
+            color: #6d214f;
+            font-size: 2.1rem;
+            letter-spacing: 0.03em;
+            font-weight: bold;
+            margin-bottom: 1.2rem;
+        }
+        .signup-label {
+            font-weight: 600;
+            color: #6d214f;
+            font-size: 1.08rem;
+        }
+        .signup-input {
+            font-size: 1.08rem;
+            padding: 0.7rem;
+            border-radius: 10px;
+            border: 1px solid #e3e3e3;
+        }
+        .signup-input:focus {
+            border-color: #6d214f;
+            box-shadow: 0 0 0 0.15rem rgba(109,33,79,0.13);
+        }
+        .signup-btn {
+            background: #6d214f;
+            border-color: #6d214f;
+            color: #fff !important;
+            font-weight: 600;
+            font-size: 1.13rem;
+            padding: 0.7rem;
+            border-radius: 12px;
+            transition: background 0.18s;
+        }
+        .signup-btn:hover, .signup-btn:focus {
+            background: #51253a;
+            border-color: #51253a;
+            color: #fff !important;
+        }
+        .signup-link {
+            color: #bfa14a;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        .signup-link:hover {
+            color: #6d214f;
+        }
+        .signup-footer {
+            color: #eab308;
+            font-weight: 600;
+            background: rgba(255,255,255,0.18);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-signup">
+    <div class="container d-flex align-items-center justify-content-center min-vh-100">
+        <div class="signup-card">
+            <h2 class="signup-title text-center">Create Account</h2>
+            <form method="POST" action="/signup" autocomplete="off">
+                <div class="mb-3">
+                    <label for="username" class="form-label signup-label">Username</label>
+                    <input type="text" class="form-control signup-input" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label signup-label">Email address</label>
+                    <input type="email" class="form-control signup-input" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label signup-label">Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control signup-input" id="password" name="password" placeholder="Create a password" required>
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword" tabindex="-1">
+                            <span id="togglePasswordIcon" class="bi bi-eye"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="role" class="form-label signup-label">Role</label>
+                    <select class="form-control signup-input" id="role" name="role" required>
+                        <option value="Member">Member</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn signup-btn w-100">Sign Up</button>
+            </form>
+            <div class="signup-footer text-center mt-4">
+                Already have an account? <a href="/login" class="signup-link" style="color:#7a294c;">Log in here</a>.
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const pwd = document.getElementById('password');
+            const icon = document.getElementById('togglePasswordIcon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                pwd.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+    </script>
+</body>
+</html>

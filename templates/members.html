@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members - The Closet Family</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        body { background: #fcfcfa; }
+        .table-card { box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
+        .member-actions .btn { margin: 0 0.25rem; }
+        h2 {
+            color: #7a294c;
+            font-weight: 700;
+        }
+        .btn-primary {
+            background: #8d223f;
+            border-color: #8d223f;
+        }
+        .btn-primary:hover {
+            background: #a82b4e;
+            border-color: #a82b4e;
+        }
+        .btn-outline-primary {
+            color: #7a294c;
+            border-color: #7a294c;
+        }
+        .btn-outline-primary:hover {
+            background: #7a294c;
+            color: #fff;
+        }
+        .btn-warning {
+            background: #d09a2d;
+            border-color: #d09a2d;
+            color: #fff;
+        }
+        .btn-warning:hover {
+            background: #eab308;
+            border-color: #eab308;
+            color: #7a294c;
+        }
+        .btn-danger {
+            background: #7a2950;
+            border-color: #7a2950;
+        }
+        .btn-danger:hover {
+            background: #a21caf;
+            border-color: #a21caf;
+        }
+        .btn-secondary {
+            background: #444b53;
+            border-color: #444b53;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: #2d3237;
+            border-color: #2d3237;
+        }
+        .table thead th {
+            background: #f5f3f7;
+            color: #7a294c;
+        }
+        .table tbody tr {
+            background: #fff;
+        }
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1">Members Directory</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Members</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a href="/add_member" class="btn btn-primary">
+                    <i class="bi bi-person-plus-fill"></i> Add Member
+                </a>
+            </div>
+        </div>
+        <a href="/members_dashboard" class="btn btn-secondary mb-3">
+            <i class="bi bi-arrow-left"></i> Back to Members Dashboard
+        </a>
+        <div class="card table-card">
+            <div class="card-body p-0">
+                <form id="multi-delete-form" method="post" action="/delete_members">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                {% if session.get('role', '').lower() == 'admin' %}
+                                    <th>
+                                        <input type="checkbox" id="select-all" onclick="toggleAll(this)">
+                                    </th>
+                                {% endif %}
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Country</th>
+                                <th>Birthday</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in members %}
+                            <tr class="animate__animated animate__fadeInUp">
+                                {% if session.get('role', '').lower() == 'admin' %}
+                                    <td>
+                                        <input type="checkbox" name="member_ids" value="{{ member.MemberID }}">
+                                    </td>
+                                {% endif %}
+                                <td>{{ member.MemberID }}</td>
+                                <td>
+                                    <a href="/member_details/{{ member.MemberID }}" class="text-decoration-none fw-bold">
+                                        {{ member.FirstName }} {{ member.LastName }}
+                                    </a>
+                                    {% if session.get('role', '').lower() == 'admin' and member.events %}
+                                        <div class="mt-2 small text-muted">
+                                            <strong>Events:</strong>
+                                            <ul class="mb-0 ps-3">
+                                                {% for event in member.events %}
+                                                    <li>
+                                                        {{ event.EventName }}
+                                                        {% if event.EventDate %}
+                                                            ({{ event.EventDate.strftime('%b %d, %Y') }})
+                                                        {% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="mailto:{{ member.Email }}" class="text-decoration-none">
+                                        {{ member.Email }}
+                                    </a>
+                                </td>
+                                <td>{{ member.Phone }}</td>
+                                <td>{{ member.Address }}</td>
+                                <td>{{ member.Country }}</td>
+                                <td>{{ member.Birthday }}</td>
+                                <td class="text-end member-actions">
+                                    <a href="/edit_member/{{ member.MemberID }}" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                    <form action="/delete_member/{{ member.MemberID }}" method="post" 
+                                          style="display:inline;" 
+                                          onsubmit="return confirm('Are you sure you want to delete this member?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination controls -->
+                <nav aria-label="Members pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if pagination.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('members', page=pagination.prev_num) }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-label="Previous">&laquo;</span>
+                        </li>
+                        {% endif %}
+                        {% for p in pagination.iter_pages(left_edge=2, right_edge=2, left_current=2, right_current=2) %}
+                            {% if p %}
+                                {% if p == pagination.page %}
+                                    <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="{{ url_for('members', page=p) }}">{{ p }}</a></li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">…</span></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if pagination.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('members', page=pagination.next_num) }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-label="Next">&raquo;</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% if session.get('role', '').lower() == 'admin' %}
+                <button type="submit" class="btn btn-danger mt-3" onclick="return confirm('Are you sure you want to delete the selected members?');">
+                    <i class="bi bi-trash"></i> Delete Selected
+                </button>
+                {% endif %}
+                </form>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleAll(source) {
+            const checkboxes = document.querySelectorAll('input[name="member_ids"]');
+            for (const cb of checkboxes) {
+                cb.checked = source.checked;
+            }
+        }
+    </script>
+</body>
+</html>

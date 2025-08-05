@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Givings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #fcfcfa; }
+        h1 {
+            color: #7a294c;
+            font-weight: 700;
+        }
+        .btn-primary {
+            background: #8d223f;
+            border-color: #8d223f;
+        }
+        .btn-primary:hover {
+            background: #a82b4e;
+            border-color: #a82b4e;
+        }
+        .btn-info {
+            background: #7a2950;
+            border-color: #7a2950;
+            color: #fff;
+        }
+        .btn-info:hover {
+            background: #a21caf;
+            border-color: #a21caf;
+        }
+        .btn-secondary {
+            background: #d09a2d;
+            border-color: #d09a2d;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: #eab308;
+            border-color: #eab308;
+            color: #7a294c;
+        }
+        .btn-danger {
+            background: #444b53;
+            border-color: #444b53;
+        }
+        .btn-danger:hover {
+            background: #2d3237;
+            border-color: #2d3237;
+        }
+        table thead th {
+            background: #f5f3f7;
+            color: #7a294c;
+        }
+        table tbody tr {
+            background: #fff;
+        }
+        table tbody tr:hover {
+            background: #f9fafb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <h1 class="mb-4"><i class="bi bi-cash-coin"></i> Givings</h1>
+        <!-- Giving Avenues Image Section -->
+        <div class="mb-4 text-center">
+            <img src="/static/giving_avenues.jpg" alt="Giving Avenues" class="img-fluid rounded shadow" style="max-width: 500px;">
+            <div class="text-muted mt-2" style="font-size:1.05em;">You can use any of the avenues above to give.</div>
+        </div>
+        <div class="mb-3">
+            <a href="/dashboard" class="btn btn-primary me-2 mb-2"><i class="bi bi-house"></i> Back to Dashboard</a>
+            <!-- Removed Give and Back buttons for members -->
+        </div>
+        <!-- Flash messages with auto-dismiss -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div id="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'message' or category == 'success' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead>
+                            <tr>
+                                {% if session.get('role', '').lower() == 'admin' %}
+                                    <th>Donation ID</th>
+                                    <th>Member ID</th>
+                                    <th>Donation Date</th>
+                                    <th>Amount</th>
+                                    <th>Actions</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for donation in Givings %}
+                            <tr>
+                                {% if session.get('role', '').lower() == 'admin' %}
+                                    <td>
+                                        <a href="/donation_details/{{ donation.DonationID }}" class="text-decoration-none">
+                                            {{ donation.DonationID }}
+                                        </a>
+                                    </td>
+                                    <td>{{ donation.MemberID }}</td>
+                                    <td>{{ donation.DonationDate }}</td>
+                                    <td>
+                                        {{ donation.Amount }}
+                                        {% if donation.Currency %}
+                                            <span class="text-muted" style="font-size:0.95em;">{{ donation.Currency }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <form action="/delete_donation/{{ donation.DonationID }}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this donation?');">
+                                            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Delete</button>
+                                        </form>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-dismiss flash messages after 3 seconds
+        setTimeout(function() {
+            var flash = document.getElementById('flash-messages');
+            if (flash) {
+                flash.style.transition = "opacity 0.5s";
+                flash.style.opacity = 0;
+                setTimeout(function() {
+                    flash.remove();
+                }, 500);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

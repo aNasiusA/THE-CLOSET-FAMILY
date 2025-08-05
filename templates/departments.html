@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departments</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        body { background: #fcfcfa; }
+        h1, .btn-primary, .btn-success, .btn-danger, .btn-secondary {
+            font-weight: 600;
+        }
+        h1 {
+            color: #7a294c;
+        }
+        .btn-primary {
+            background: #8d223f;
+            border-color: #8d223f;
+        }
+        .btn-primary:hover {
+            background: #a82b4e;
+            border-color: #a82b4e;
+        }
+        .btn-success {
+            background: #444b53;
+            border-color: #444b53;
+        }
+        .btn-success:hover {
+            background: #2d3237;
+            border-color: #2d3237;
+        }
+        .btn-danger {
+            background: #7a2950;
+            border-color: #7a2950;
+        }
+        .btn-danger:hover {
+            background: #a21caf;
+            border-color: #a21caf;
+        }
+        .btn-secondary {
+            background: #d09a2d;
+            border-color: #d09a2d;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: #eab308;
+            border-color: #eab308;
+            color: #7a294c;
+        }
+        .table thead th {
+            background: #f5f3f7;
+            color: #7a294c;
+        }
+        .table tbody tr {
+            background: #fff;
+        }
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5 animate__animated animate__fadeIn">
+        <h1 class="mb-4">Departments</h1>
+        <a href="/dashboard" class="btn btn-primary mb-3">Back to Dashboard</a>
+        <!-- Only show Add Department button to admins -->
+        {% if session.get('role', '').lower() == 'admin' %}
+        <a href="/add_department" class="btn btn-success mb-3">Add Department</a>
+        {% endif %}
+        <a href="javascript:history.back()" class="btn btn-secondary mb-3">Back</a>
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div id="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'message' or category == 'success' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Department Name</th>
+                    <th>Description</th>
+                    <th>Department Heads</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for department in departments %}
+                <tr class="animate__animated animate__fadeInUp">
+                    <td>
+                        <a href="/department_details/{{ department.DepartmentID }}" class="text-decoration-none">
+                            {{ department.DepartmentName }}
+                        </a>
+                        {% if session.get('role', '').lower() == 'admin' %}
+                        <br>
+                        <a href="/department_members/{{ department.DepartmentID }}" class="btn btn-outline-primary btn-sm mt-2">
+                            View Members
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td>{{ department.Description }}</td>
+                    <td>{{ department.DepartmentHeads }}</td>
+                    <td>
+                        {% if session.get('role', '').lower() == 'admin' %}
+                        <form action="/delete_department/{{ department.DepartmentID }}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this department?');">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                        {% else %}
+                        {% set joined = false %}
+                        {% if joined_departments %}
+                            {% for jd in joined_departments %}
+                                {% if jd.MinistryID == department.DepartmentID %}
+                                    {% set joined = true %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        {% if joined %}
+                            <form action="/unjoin_department/{{ department.DepartmentID }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-warning">Unjoin</button>
+                            </form>
+                            <button class="btn btn-success" disabled>You Joined</button>
+                        {% else %}
+                            <form action="/join_department/{{ department.DepartmentID }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-success">Join Department</button>
+                            </form>
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-dismiss flash messages after 3 seconds
+        setTimeout(function() {
+            var flash = document.getElementById('flash-messages');
+            if (flash) {
+                flash.style.transition = "opacity 0.5s";
+                flash.style.opacity = 0;
+                setTimeout(function() {
+                    flash.remove();
+                }, 500);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

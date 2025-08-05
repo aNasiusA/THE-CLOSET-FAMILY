@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - The Closet Family</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        body { background: #fcfcfa; }
+        h2, .btn-primary, .btn-secondary {
+            font-weight: 600;
+        }
+        h2 {
+            color: #7a294c;
+        }
+        .btn-primary {
+            background: #d09a2d;
+            border-color: #d09a2d;
+        }
+        .btn-primary:hover {
+            background: #eab308;
+            border-color: #eab308;
+            color: #7a294c;
+        }
+        .btn-secondary {
+            background: #8d223f;
+            border-color: #8d223f;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: #a82b4e;
+            border-color: #a82b4e;
+        }
+        .card-title a {
+            color: #7a294c;
+        }
+        .card-title a:hover {
+            color: #a21caf;
+        }
+        .table thead th {
+            background: #f5f3f7;
+            color: #7a294c;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1">Church Events</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Events</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                {% if session.get('role', '').lower() == 'admin' %}
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEventModal">
+                        <i class="bi bi-plus-circle"></i> Add Event
+                    </a>
+                    <a href="/event_registrants" class="btn btn-warning">
+                        <i class="bi bi-people"></i> Event Registrants
+                    </a>
+                {% endif %}
+                <a href="/main_dashboard" class="btn btn-secondary">
+                    <i class="bi bi-house"></i> Back to Main Dashboard
+                </a>
+            </div>
+        </div>
+        <a href="javascript:history.back()" class="btn btn-secondary mb-3">Back</a>
+        <!-- Show success/error messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'message' or category == 'success' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="row">
+            {% for event in events %}
+            <div class="col-md-8 mb-4 animate__animated animate__fadeInUp">
+                <div class="card h-100 flex-row">
+                    {% if event.EventImage %}
+                    <div class="col-md-5 d-flex align-items-center justify-content-center p-3">
+                        <img src="{{ url_for('static', filename=event.EventImage.lstrip('/static/')) if event.EventImage.startswith('/static/') else event.EventImage }}"
+                             class="img-fluid rounded"
+                             alt="{{ event.EventName }} Flyer"
+                             style="max-height: 260px; object-fit: contain;">
+                    </div>
+                    {% endif %}
+                    <div class="card-body {% if event.EventImage %}col-md-7{% endif %}">
+                        <h5 class="card-title">
+                            <a href="/event_details/{{ event.EventID }}" class="text-decoration-none">
+                                {{ event.EventName }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted">
+                            <i class="bi bi-calendar"></i>
+                            {% if event.EventDate %}
+                                {{ event.EventDate.strftime('%B %d, %Y') }}
+                            {% endif %}
+                        </p>
+                        <p class="card-text">{{ event.Description }}</p>
+                        <p class="card-text">
+                            <i class="bi bi-geo-alt"></i> {{ event.Location }}
+                        </p>
+                        <p class="card-text">
+                            <i class="bi bi-people"></i> {{ event.RegisteredCount }} registered
+                        </p>
+                        <div class="card-footer bg-transparent border-0 px-0 d-flex flex-wrap align-items-center gap-2">
+                            <button class="btn btn-primary mb-2" onclick="registerForEvent({{ event.EventID }})">
+                                Register for Event
+                            </button>
+                            <!-- Allow all users to register invitees (non-members) -->
+                            <form class="d-flex align-items-center gap-2" onsubmit="registerInviteeForEvent(event, {{ event.EventID }})">
+                                <input type="text" class="form-control form-control-sm" name="invitee_name" placeholder="Invitee Name" required style="width: 150px;">
+                                <input type="email" class="form-control form-control-sm" name="invitee_email" placeholder="Invitee Email" required style="width: 180px;">
+                                <button type="submit" class="btn btn-secondary btn-sm">Register Invitee</button>
+                            </form>
+                            {% if session.get('role', '').lower() == 'admin' %}
+                            <a href="/edit_event/{{ event.EventID }}" class="btn btn-warning btn-sm mb-2">
+                                <i class="bi bi-pencil"></i> Edit Event
+                            </a>
+                            <form action="/delete_event/{{ event.EventID }}" method="post" onsubmit="return confirm('Are you sure you want to delete this event?');" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                    style="background:#7a2950;border-color:#7a2950;">
+                                    <i class="bi bi-trash"></i> Delete Event
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div class="modal fade animate__animated animate__fadeIn" id="addEventModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="/add_event" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()" id="eventForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Event Name</label>
+                            <input type="text" class="form-control" name="event_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="datetime-local" class="form-control" name="event_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" name="location" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Event Image</label>
+                            <input type="file" class="form-control" name="event_image" accept="image/*" id="event_image" onchange="validateFileSize(this)">
+                            <small class="text-muted">Maximum file size: 16MB. Supported formats: PNG, JPG, JPEG, GIF</small>
+                            <div id="imageError" class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            Add Event
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function registerForEvent(eventId) {
+            if (confirm('Would you like to register for this event?')) {
+                fetch(`/register_for_event/${eventId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    alert('Error registering for event');
+                });
+            }
+        }
+
+        function registerInviteeForEvent(e, eventId) {
+            e.preventDefault();
+            const form = e.target;
+            const name = form.invitee_name.value.trim();
+            const email = form.invitee_email.value.trim();
+            if (!name || !email) return;
+            if (confirm('Register this invitee for the event?')) {
+                fetch(`/register_for_event/${eventId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ invitee_name: name, invitee_email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    alert('Error registering invitee for event');
+                });
+            }
+        }
+
+        function validateFileSize(input) {
+            const file = input.files[0];
+            const errorDiv = document.getElementById('imageError');
+            const maxSize = 16 * 1024 * 1024; // 16MB
+
+            if (file) {
+                if (file.size > maxSize) {
+                    errorDiv.textContent = 'File size exceeds 16MB limit';
+                    input.value = '';
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+                
+                if (!file.type.startsWith('image/')) {
+                    errorDiv.textContent = 'File must be an image';
+                    input.value = '';
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+                
+                input.classList.remove('is-invalid');
+                return true;
+            }
+            return true;
+        }
+
+        function validateForm() {
+            const form = document.getElementById('eventForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const spinner = submitBtn.querySelector('.spinner-border');
+            
+            if (form.checkValidity() && validateFileSize(document.getElementById('event_image'))) {
+                submitBtn.disabled = true;
+                spinner.classList.remove('d-none');
+                return true;
+            }
+            
+            form.classList.add('was-validated');
+            return false;
+        }
+    </script>
+</body>
+</html>

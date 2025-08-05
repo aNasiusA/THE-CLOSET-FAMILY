@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('/static/admin.jpg'); /* Place your image in the static folder */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 2rem 0 2rem;
+        }
+        .admin-logo-title {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .admin-logo {
+            height: 80px;
+            width: 80px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: #fff;
+            border: 2px solid #7a294c;
+        }
+        .admin-title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #7a294c;
+            line-height: 1.1;
+        }
+        .admin-dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 1.2rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        .admin-btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .admin-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            border: none;
+            color: #fff;
+            text-align: left;
+            transition: box-shadow 0.2s, background 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            text-decoration: none;
+        }
+        .admin-btn i {
+            font-size: 1.5rem;
+        }
+        .btn-members { background: #8d223f; }
+        .btn-members:hover { background: #a82b4e; }
+        .btn-events { background: #d09a2d; }
+        .btn-events:hover { background: #eab308; color: #7a294c; }
+        .btn-departments { background: #444b53; }
+        .btn-departments:hover { background: #2d3237; }
+        .btn-givings { background: #7a2950; }
+        .btn-givings:hover { background: #a21caf; }
+        .btn-attendance { background: #eab308; color: #7a294c; }
+        .btn-attendance:hover { background: #facc15; color: #7a294c; }
+        .btn-givings-analytics { background: #8d223f; }
+        .btn-givings-analytics:hover { background: #a82b4e; }
+        .btn-main-dashboard {
+            background: #fff;
+            color: #7a294c;
+            border: 2px solid #7a294c;
+        }
+        .btn-main-dashboard:hover {
+            background: #f5f3f7;
+            color: #a21caf;
+            border-color: #a21caf;
+        }
+        @media (max-width: 767px) {
+            .admin-btn-grid {
+                grid-template-columns: 1fr;
+            }
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <div class="admin-logo-title">
+            <img src="/static/logo.jpg" alt="Logo" class="admin-logo">
+            <span class="admin-title">
+                THE CLOSET<br>FAMILY
+            </span>
+        </div>
+        <a href="/logout" class="btn btn-primary px-4 py-2"
+           style="font-weight:600;font-size:1.1rem;border-radius:10px;background:#8d223f;border-color:#8d223f;">
+            Logout
+        </a>
+    </div>
+    <div class="container py-2">
+        <div class="admin-dashboard-title">Admin Dashboard</div>
+        <div class="admin-btn-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top:2rem;">
+            <a href="/members_dashboard" class="admin-btn btn-members shadow-sm">
+                <i class="bi bi-people"></i>
+                <span>Manage Members</span>
+            </a>
+            <a href="/members" class="admin-btn btn-members shadow-sm">
+                <i class="bi bi-list-ul"></i>
+                <span>All Registered People</span>
+            </a>
+            <a href="/events" class="admin-btn btn-events shadow-sm">
+                <i class="bi bi-calendar-event"></i>
+                <span>Manage Events</span>
+            </a>
+            <a href="/departments" class="admin-btn btn-departments shadow-sm">
+                <i class="bi bi-bank"></i>
+                <span>Manage Departments</span>
+            </a>
+            <a href="/donations" class="admin-btn btn-givings shadow-sm">
+                <i class="bi bi-person"></i>
+                <span>View Givings</span>
+            </a>
+            <a href="/attendance_dashboard" class="admin-btn btn-attendance shadow-sm">
+                <i class="bi bi-clipboard-check"></i>
+                <span>Attendance Dashboard</span>
+            </a>
+            <a href="/Givings_dashboard" class="admin-btn btn-givings-analytics shadow-sm">
+                <i class="bi bi-bar-chart"></i>
+                <span>Givings Analytics</span>
+            </a>
+            <a href="/main_dashboard" class="admin-btn btn-main-dashboard shadow-sm">
+                <i class="bi bi-house"></i>
+                <span>Main Dashboard</span>
+            </a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

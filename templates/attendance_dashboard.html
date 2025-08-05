@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #fcfcfa; }
+        h2, .stats-label { color: #7a294c; font-weight: 700; }
+        .attendance-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .btn-mark-attendance {
+            background: #444b53;
+            border-color: #444b53;
+        }
+        .btn-mark-attendance:hover {
+            background: #2d3237;
+            border-color: #2d3237;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Attendance Dashboard</h2>
+            <a href="/members_dashboard" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Members Dashboard
+            </a>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="attendance-card p-4">
+                    <h4>Mark Attendance</h4>
+                    <form id="attendanceForm">
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" id="attendance_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Service/Event</label>
+                            <select class="form-control" id="service_type" required>
+                                <option value="Sunday Service">Sunday Service</option>
+                                <option value="Bible Study">Bible Study</option>
+                                <option value="Prayer Meeting">Prayer Meeting</option>
+                                <option value="Special Event">Special Event</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Members Present</label>
+                            <div class="card p-3" style="max-height: 300px; overflow-y: auto;">
+                                {% for member in members %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="members" value="{{ member.MemberID }}" id="member{{ member.MemberID }}">
+                                    <label class="form-check-label" for="member{{ member.MemberID }}">
+                                        {{ member.FirstName }} {{ member.LastName }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-mark-attendance">Mark Attendance</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="attendance-card p-4">
+                    <h4>Today's Attendance</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Service</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayAttendance">
+                                {% for record in today_attendance %}
+                                <tr>
+                                    <td>{{ record.FirstName }} {{ record.LastName }}</td>
+                                    <td>{{ record.ServiceType }}</td>
+                                    <td>{{ record.AttendanceTime }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="attendance-card p-4">
+                    <h4>Attendance Statistics</h4>
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.getElementById('attendanceForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const checkedMembers = Array.from(document.querySelectorAll('input[name="members"]:checked')).map(cb => cb.value);
+            
+            try {
+                const response = await fetch('/mark_attendance', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: document.getElementById('attendance_date').value,
+                        service_type: document.getElementById('service_type').value,
+                        members: checkedMembers
+                    })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Attendance marked successfully!');
+                    location.reload();
+                } else {
+                    alert(data.message || 'Error marking attendance');
+                }
+            } catch (error) {
+                alert('Error marking attendance');
+            }
+        };
+
+        // Initialize attendance chart
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ attendance_data.labels|tojson }},
+                datasets: [{
+                    label: 'Attendance',
+                    data: {{ attendance_data.values|tojson }},
+                    borderColor: '#7a294c',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

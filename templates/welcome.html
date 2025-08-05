@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome - The Closet Family</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body.welcome-bg {
+            background-image: url('/static/welcome 2.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .welcome-fixed-header {
+            position: fixed;
+            top: 32px;
+            left: 32px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .welcome-logo-fixed {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 0.5rem;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(122,41,76,0.10);
+            padding: 6px;
+        }
+        .welcome-motto {
+            color: #7a294c;
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 0;
+            padding: 0.35rem 1.1rem;
+            border-radius: 12px;
+            background: #f8f6f8;
+            box-shadow: 0 2px 8px rgba(122,41,76,0.07);
+            text-align: left;
+            letter-spacing: 0.01em;
+        }
+        .welcome-container {
+            max-width: 520px;
+            margin: 5rem auto 0 auto;
+            background: rgba(255,255,255,0.22);
+            border-radius: 28px;
+            box-shadow: 0 4px 32px rgba(122,41,76,0.13);
+            padding: 2.2rem 2rem 2rem 2rem;
+            backdrop-filter: blur(4px);
+            position: relative;
+        }
+        .welcome-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #7a294c;
+            background: #fff;
+            border-radius: 14px;
+            padding: 0.9rem 1.7rem;
+            margin-bottom: 1.1rem;
+            letter-spacing: 0.01em;
+            display: inline-block;
+            box-shadow: 0 2px 16px rgba(122,41,76,0.04);
+        }
+        .welcome-subtitle {
+            font-size: 1.15rem;
+            color: #a0497e;
+            margin-bottom: 1.3rem;
+            background: #f8f6f8;
+            border-radius: 10px;
+            padding: 0.5rem 1.2rem;
+            display: inline-block;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+        .welcome-socials {
+            margin: 2rem 0 1.2rem 0;
+        }
+        .welcome-socials a {
+            display: inline-block;
+            margin: 0 0.3rem 0.7rem 0.3rem;
+        }
+        .welcome-socials img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 9px rgba(122,41,76,0.10);
+            border: 1.5px solid #e9e0ea;
+            transition: transform 0.17s;
+            padding: 4px;
+        }
+        .welcome-socials img:hover {
+            transform: scale(1.09);
+        }
+        .welcome-btn-main {
+            background-color: #7a294c;
+            color: #fff !important;
+            font-size: 1.18rem;
+            font-weight: 700;
+            border-radius: 12px;
+            border: none;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.9rem 0;
+            transition: background 0.19s;
+            box-shadow: 0 4px 24px rgba(122,41,76,0.09);
+            letter-spacing: 0.04em;
+        }
+        .welcome-btn-main:hover, .welcome-btn-main:focus {
+            background: #a21caf;
+        }
+        .welcome-btn-secondary {
+            background: #fff;
+            color: #7a294c !important;
+            font-size: 1.12rem;
+            font-weight: 700;
+            border-radius: 12px;
+            border: none;
+            width: 100%;
+            padding: 0.9rem 0;
+            transition: background 0.17s, color 0.18s;
+            box-shadow: 0 1.5px 12px rgba(122,41,76,0.04);
+            letter-spacing: 0.04em;
+        }
+        .welcome-btn-secondary:hover, .welcome-btn-secondary:focus {
+            background: #f6ecf6;
+            color: #a21caf !important;
+        }
+        @media (max-width: 750px) {
+            .welcome-fixed-header {
+                left: 8px;
+                top: 8px;
+            }
+            .welcome-logo-fixed {
+                width: 50px;
+                height: 50px;
+            }
+            .welcome-motto {
+                font-size: 0.98rem;
+                padding: 0.2rem 0.7rem;
+            }
+            .welcome-container {
+                padding: 1.1rem 0.5rem 1.35rem 0.5rem;
+            }
+            .welcome-title { font-size: 1.4rem; padding: 0.5rem 1rem;}
+            .welcome-subtitle { font-size: 1rem; padding: 0.3rem 0.8rem;}
+            .welcome-socials img { width: 34px; height: 34px; }
+        }
+        @media (max-width: 420px) {
+            .welcome-fixed-header { left:2px; top:2px; }
+            .welcome-logo-fixed { width: 28px; height: 28px; }
+            .welcome-motto { font-size: 0.80rem; padding: 2px 4px;}
+            .welcome-title { font-size: 0.9rem; padding: 0.2rem 0.4rem;}
+        }
+    </style>
+</head>
+<body class="welcome-bg" style="position:relative; min-height:100vh;">
+    <!-- Fixed logo & motto on top-left -->
+    <div class="welcome-fixed-header">
+        <img src="/static/logo.jpg" alt="The Closet Family Logo" class="welcome-logo-fixed">
+        <span class="welcome-motto" style="background:none; box-shadow:none; padding:0; font-family:'Segoe Script', 'Brush Script MT', cursive; font-size:1.18rem; font-weight:700; line-height:1.15;">
+            <span style="color:#9a6a87;">Raising a</span><br>
+            <span style="color:#9a6a87; font-size:1.22rem; letter-spacing:0.02em;">Jesus loving</span><br>
+            <span style="color:#906276;">generation.</span>
+        </span>
+    </div>
+    <!-- Centered main card -->
+    <div class="welcome-container text-center shadow-lg">
+        <div class="welcome-subtitle" style="font-weight:bold; color:#a0497e; text-shadow:0 1px 8px rgba(58,58,138,0.08);">
+            Welcome Home .....
+        </div>
+        <div class="welcome-title">To The Closet Family</div>
+        <div class="welcome-socials d-flex justify-content-center flex-wrap">
+            <a href="https://www.tiktok.com/@yourprofile" target="_blank" rel="noopener">
+                <img src="/static/Tiktok.png" alt="TikTok">
+            </a>
+            <a href="theclosetfamily@gmail.com" target="_blank" rel="noopener">
+                <img src="/static/Gmail.png" alt="Gmail">
+            </a>
+            <a href="https://www.instagram.com/theclosetfamily?igsh=MjVuZHlxYTVkcTE1" target="_blank" rel="noopener">
+                <img src="/static/Instagram.jpeg" alt="Instagram">
+            </a>
+            <a href="https://open.spotify.com/show/7nOnWQILWmyf7gnP7Er5km?si=NjOOz9C7TYqGPDVJWTvE6g" target="_blank" rel="noopener">
+                <img src="/static/Spotify.png" alt="Spotify">
+            </a>
+            <a href="https://podcasts.apple.com/gh/podcast/the-closet-family/id1649069532" target="_blank" rel="noopener">
+                <img src="/static/Podcast.jpeg" alt="Podcast">
+            </a>
+            <a href="https://audiomack.com/theclosetfamily" target="_blank" rel="noopener">
+                <img src="/static/Audiomack.png" alt="Audio">
+            </a>
+            <a href="https://whatsapp.com/channel/0029VagAWQO84OmC5DLwNa0m" target="_blank" rel="noopener">
+                <img src="/static/Whatsapp.jpeg" alt="Whatsapp">
+            </a>
+            <a href="https://youtube.com/@larryarthur1?si=jXMK4LfyKNxsw9xb" target="_blank" rel="noopener">
+                <img src="/static/Youtube.jpg" alt="Youtube">
+            </a>
+        </div>
+        <a href="{{ url_for('login') }}" class="welcome-btn-main btn">Log in</a>
+        <a href="{{ url_for('signup') }}" class="welcome-btn-secondary btn">Create account</a>
+    </div>
+</body>
+
+</html>

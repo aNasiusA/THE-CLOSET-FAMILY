@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaders</title>
+</head>
+<body>
+    <h1>Leaders</h1>
+    <a href="/dashboard">Back to Dashboard</a>
+    <a href="/events">Manage Events</a>
+    <a href="/add_leader">Add Leader</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>LeaderID</th>
+                <th>FirstName</th>
+                <th>LastName</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leader in leaders %}
+            <tr>
+                <td>{{ leader.LeaderID }}</td>
+                <td>{{ leader.FirstName }}</td>
+                <td>{{ leader.LastName }}</td>
+                <td>{{ leader.Email }}</td>
+                <td>{{ leader.Phone }}</td>
+                <td>{{ leader.Role }}</td>
+                <td>
+                    <a href="/edit_leader/{{ leader.LeaderID }}">Edit</a>
+                    <a href="/delete_leader/{{ leader.LeaderID }}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,2 @@
+ALTER TABLE Members 
+ADD IsInvitee BIT DEFAULT 0;
